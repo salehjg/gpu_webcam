@@ -27,32 +27,11 @@ void LaunchKernel(
         const unsigned char *mask,
         unsigned char *dstImage);
 
-int mainold(int argc, char** argv)
-{
-    VideoCapture cap;
-    // open the default camera, use something different from 0 otherwise;
-    // Check VideoCapture documentation.
-    if(!cap.open(0))
-        return 0;
-    for(;;)
-    {
-        Mat frame;
-        cap >> frame;
-        if( frame.empty() ) break; // end of video stream
-        imshow("this is you, smile! :)", frame);
-        if( waitKey(10) == 27 ) break; // stop capturing by pressing ESC
-    }
-    // the camera will be closed automatically upon exit
-    // cap.close();
-    return 0;
-}
-
 int main(int argc, char** argv)
 {
     const unsigned long lenImage = CONFIG_IMAGE_HEIGHT * CONFIG_IMAGE_WIDTH * 3;
     const unsigned long lenMask  = CONFIG_MASK_SIZE * CONFIG_MASK_SIZE;
 
-    unsigned char *h_src1;
     unsigned char *d_src1;
 
     unsigned char *h_dst1;
@@ -77,7 +56,6 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    h_src1 = (unsigned char*)malloc(sizeof(unsigned char) * lenImage);
     h_dst1 = (unsigned char*)malloc(sizeof(unsigned char) * lenImage);
     h_mask = (unsigned char*)malloc(sizeof(unsigned char) * lenMask);
 
@@ -106,12 +84,8 @@ int main(int argc, char** argv)
         cap >> frame;
         if( frame.empty() ) break; // end of video stream
         //=======================================================================================
-        for(unsigned long i = 0 ; i<lenImage;i++){
-            h_src1[i] = frame.data[i];
-        }
 
-
-        CHECK(cudaMemcpy(d_src1, h_src1, sizeof(unsigned char) * lenImage, cudaMemcpyHostToDevice));
+        CHECK(cudaMemcpy(d_src1, frame.data, sizeof(unsigned char) * lenImage, cudaMemcpyHostToDevice));
         LaunchKernel(
                 d_src1,
                 d_mask,
@@ -129,7 +103,6 @@ int main(int argc, char** argv)
     cudaFree(d_src1);
     cudaFree(d_mask);
     cudaFree(d_dst1);
-    free(h_src1);
     free(h_mask);
     free(h_dst1);
 }

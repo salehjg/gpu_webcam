@@ -30,8 +30,8 @@ message("Found these kernels: ")
 message("${KERNEL_SOURCES}")
 
 find_package(OpenCV REQUIRED)
-cuda_add_executable(gpu_webcam_repo
+cuda_add_executable(gpu_webcam
         ${KERNEL_SOURCES}
         ${SOURCE_FILES_CUDA}
         )
-target_link_libraries(gpu_webcam_repo ${OpenCV_LIBS} )
+target_link_libraries(gpu_webcam ${OpenCV_LIBS} )

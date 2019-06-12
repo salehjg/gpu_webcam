@@ -6,6 +6,8 @@
 #define CONFIG_IMAGE_WIDTH 640
 #define CONFIG_IMAGE_HEIGHT 480
 #define CONFIG_IMAGE_CHANNEL 3
+#define CONFIG_COMPUTE_COUNT 10000
+
 
 template <int BLOCK_SIZE, int MASK_SIZE, int CHANNELS>
 __global__ void WatermarkKernel(
@@ -30,9 +32,11 @@ __global__ void WatermarkKernel(
 
 
     index = gy*CONFIG_IMAGE_WIDTH*CONFIG_IMAGE_CHANNEL + gx*CONFIG_IMAGE_CHANNEL;
-    for(int c=0; c<3; c++){
-        maskIndex = ty*MASK_SIZE + tx;
-        localMem[ty][tx][c] = (unsigned char) (srcImage[index+c] * (float)mask[maskIndex] / 256.0f);
+    for(int iter=0; iter<CONFIG_COMPUTE_COUNT; iter++) {
+        for (int c = 0; c < 3; c++) {
+            maskIndex = ty * MASK_SIZE + tx;
+            localMem[ty][tx][c] = (unsigned char) (srcImage[index + c] * (float) mask[maskIndex] / 256.0f);
+        }
     }
 
     __syncthreads();

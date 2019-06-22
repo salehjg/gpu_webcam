@@ -3,9 +3,13 @@
 #include <stdio.h>
 
 #define Mask_width  3
+#define Mask_width_half  (Mask_width/2)
 
-#define TILE_WIDTH 12
+//Tiles are smaller than blocks, so we can pad the input image while burst reading it into local memory.
+
 #define BLOCK_WIDTH 16
+#define TILE_WIDTH (BLOCK_WIDTH - (Mask_width -1))
+
 
 __global__ void SpatialFilter(
         const unsigned char* deviceInputImageData,
@@ -22,8 +26,8 @@ __global__ void SpatialFilter(
     int row_o = ty + (blockIdx.y*TILE_WIDTH);
     int col_o = tx + (blockIdx.x*TILE_WIDTH);
 
-    int row_i = row_o - 2;
-    int col_i = col_o - 2;
+    int row_i = row_o - Mask_width_half;
+    int col_i = col_o - Mask_width_half;
 
     for(int color=0; color<imageChannels; color++){
 
@@ -72,7 +76,7 @@ void LaunchKernel_SpatialFilter(
     unsigned int imageWidth=640, imageHeight=480;
 
     dim3 block(BLOCK_WIDTH,BLOCK_WIDTH);
-    dim3 grid((imageWidth-1)/TILE_WIDTH+1,(imageHeight-1)/TILE_WIDTH+1,3);
+    dim3 grid((imageWidth-1)/TILE_WIDTH+1,(imageHeight-1)/TILE_WIDTH+1,1);
 
     SpatialFilter<<<grid,block>>>(srcImage, dstImage, mask, 640, 480, 3);
 }

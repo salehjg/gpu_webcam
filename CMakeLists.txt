@@ -19,9 +19,6 @@ set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -gencode arch=compute_61,code=sm_61")
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std c++11")
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3")
 
-set(SOURCE_FILES_CUDA
-        main.cpp
-        )
 
 # Find all cuda kernels
 #(https://stackoverflow.com/questions/29308787/cmake-file-for-cpp-cu-files)
@@ -30,8 +27,13 @@ message("Found these kernels: ")
 message("${KERNEL_SOURCES}")
 
 find_package(OpenCV REQUIRED)
-cuda_add_executable(gpu_webcam
+cuda_add_executable(WatermarkExample
         ${KERNEL_SOURCES}
-        ${SOURCE_FILES_CUDA}
+        WatermarkExample.cpp
         )
-target_link_libraries(gpu_webcam ${OpenCV_LIBS} )
+cuda_add_executable(EdgeDetectionExample
+        ${KERNEL_SOURCES}
+        EdgeDetectionExample.cpp
+        )
+target_link_libraries(WatermarkExample ${OpenCV_LIBS} )
+target_link_libraries(EdgeDetectionExample ${OpenCV_LIBS} )

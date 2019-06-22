@@ -22,7 +22,7 @@ using namespace std;
 
 
 extern
-void LaunchKernel(
+void LaunchKernel_WatermarkKernel(
         const unsigned char *srcImage,
         const unsigned char *mask,
         unsigned char *dstImage);
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
         //=======================================================================================
 
         CHECK(cudaMemcpy(d_src1, frame.data, sizeof(unsigned char) * lenImage, cudaMemcpyHostToDevice));
-        LaunchKernel(
+        LaunchKernel_WatermarkKernel(
                 d_src1,
                 d_mask,
                 d_dst1);

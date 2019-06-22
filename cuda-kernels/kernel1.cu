@@ -52,7 +52,7 @@ __global__ void WatermarkKernel(
     }
 }
 
-void LaunchKernel(
+void LaunchKernel_WatermarkKernel(
         const unsigned char *srcImage,
         const unsigned char *mask,
         unsigned char *dstImage){

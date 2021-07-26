@@ -26,6 +26,12 @@ void LaunchKernel_WatermarkKernel(
         const unsigned char *srcImage,
         const unsigned char *mask,
         unsigned char *dstImage);
+        
+Mat resizeImageTo640(Mat &frame){
+    Mat resized_down;
+    resize(frame, resized_down, Size(640, 480), INTER_LINEAR);
+    return resized_down;
+}
 
 int main(int argc, char** argv)
 {
@@ -50,7 +56,7 @@ int main(int argc, char** argv)
     CHECK(cudaDeviceSynchronize());
 
 
-    Mat imgMask = imread("../mask.bmp", CV_LOAD_IMAGE_GRAYSCALE);
+    Mat imgMask = imread("../mask.bmp", IMREAD_GRAYSCALE);
     if(!imgMask.data){
         cout <<  "Could not open or find the image" << std::endl ;
         return -1;
@@ -74,15 +80,16 @@ int main(int argc, char** argv)
 
 
     VideoCapture cap;
-    if(!cap.open(0))
+    if(!cap.open(1))
         return 0;
 
     int cnt=0;
     //for(int iframe=0; iframe<2; iframe++) {
     for(;;){
-        Mat frame;
-        cap >> frame;
-        if( frame.empty() ) break; // end of video stream
+        Mat frameOrg;
+        cap >> frameOrg;
+        if( frameOrg.empty() ) break; // end of video stream
+        Mat frame = resizeImageTo640(frameOrg);
         //=======================================================================================
 
         CHECK(cudaMemcpy(d_src1, frame.data, sizeof(unsigned char) * lenImage, cudaMemcpyHostToDevice));

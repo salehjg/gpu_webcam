@@ -6,13 +6,13 @@ set(REPO_DIR_CMAKE  ${PROJECT_SOURCE_DIR})
 set(BIN_DIR_CMAKE   ${CMAKE_BINARY_DIR})
 
 
-SET(CUDA_INCLUDE_DIRS /usr/include)
+SET(CUDA_INCLUDE_DIRS /opt/cuda/include)
 SET(CUDA_LIBRARIES cudart cublas)
-SET(CUDA_LIBRARY_DIRS /usr/lib/X86_64-linux-gnu)
+SET(CUDA_LIBRARY_DIRS /opt/cuda/lib64)
 
 find_package(CUDA REQUIRED)
 
-SET(CUDA_HOST_COMPILER /usr/bin/gcc-6)
+SET(CUDA_HOST_COMPILER /usr/bin/gcc-10)
 set(CUDA_PROPAGATE_HOST_FLAGS False)
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options '-fPIC'")
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -gencode arch=compute_61,code=sm_61")

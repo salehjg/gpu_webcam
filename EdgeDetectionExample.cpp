@@ -28,6 +28,13 @@ void LaunchKernel_SpatialFilter(
         const float *mask,
         unsigned char *dstImage);
 
+
+Mat resizeImageTo640(Mat &frame){
+    Mat resized_down;
+    resize(frame, resized_down, Size(640, 480), INTER_LINEAR);
+    return resized_down;
+}
+
 int main(int argc, char** argv)
 {
     const unsigned long lenImage = CONFIG_IMAGE_HEIGHT * CONFIG_IMAGE_WIDTH * 3;
@@ -66,15 +73,16 @@ int main(int argc, char** argv)
 
 
     VideoCapture cap;
-    if(!cap.open(0))
+    if(!cap.open(1))
         return 0;
 
     int cnt=0;
     //for(int iframe=0; iframe<2; iframe++) {
     for(;;){
-        Mat frame;
-        cap >> frame;
-        if( frame.empty() ) break; // end of video stream
+        Mat frameOrg;
+        cap >> frameOrg;
+        if( frameOrg.empty() ) break; // end of video stream
+        Mat frame = resizeImageTo640(frameOrg);
         //=======================================================================================
 
         CHECK(cudaMemcpy(d_src1, frame.data, sizeof(unsigned char) * lenImage, cudaMemcpyHostToDevice));
